@@ -55,19 +55,11 @@ describe('GET /api', () => {
         .get('/api')
         .expect(200)
     })
-    test('A JSON object with the correct number of keys is returned when passed a request', () => {
-        return request(app)
-        .get('/api') 
-        .then(({ body }) => {
-        expect(typeof body).toBe('object')
-        expect(Object.keys(body).length).toBe(Object.keys(endpoints).length)
-        })
-    })
     test('Request responds with an object describing all the available endpoints', () => {
         return request(app)
         .get('/api')
-        .then((body) => {
-        expect(body.body).toEqual(endpoints)
+        .then(({ body }) => {
+        expect(body).toEqual(endpoints)
     })
 })
 })
