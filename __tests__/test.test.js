@@ -3,6 +3,7 @@ const app = require('../db/app')
 const seed = require('../db/seeds/seed')
 const data = require("../db/data/test-data/index")
 const db = require("../db/connection.js")
+const endpoints = require('../endpoints.json')
 
 
 beforeEach(() => {
@@ -46,5 +47,19 @@ describe('GET /api/topics', () => {
           })
     })
 })
+})
+})
+describe('GET /api', () => {
+    test('Status code 200 returned', () => {
+        return request(app)
+        .get('/api')
+        .expect(200)
+    })
+    test('Request responds with an object describing all the available endpoints', () => {
+        return request(app)
+        .get('/api')
+        .then(({ body }) => {
+        expect(body).toEqual(endpoints)
+    })
 })
 })
