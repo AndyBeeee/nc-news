@@ -3,7 +3,6 @@ const app = express()
 
 const { getTopics } = require('./controllers/topics.controller.js')
 
-app.use(express.json())
 
 app.get('/api/topics', getTopics)
 
@@ -17,8 +16,5 @@ app.use((err, req, res, next) => {
     }
   })
 
-app.listen(9090, () => {
-    console.log('listening on port 9090')
-})
 
 module.exports = app

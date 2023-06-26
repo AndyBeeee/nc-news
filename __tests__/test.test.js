@@ -26,24 +26,25 @@ describe('GET /api/topics', () => {
         expect(body.topics).toBeInstanceOf(Array)
         })
     })
-    test('The correct properties are returned when passed a get request', () => {
+    test('The correct length of data is returned when passed a get request', () => {
+        return request(app)
+        .get("/api/topics")
+        .then(({ body }) => {
+        expect(body.topics.length).toBe(data.topicData.length)
+        })
+    })
+    test('The correct properties and data are returned when passed a get request', () => {
         return request(app)
         .get("/api/topics")
         .then(({ body }) => {
         body.topics.forEach(topic => {
         expect(topic).toHaveProperty('slug')
         expect(topic).toHaveProperty('description')
-        })
-    })
-})
-    test('The correct topic data is returned when passed a get request', () => {
-        return request(app)
-        .get("/api/topics")
-        .then(({ body }) => {
         expect(body.topics[0]).toMatchObject({
             description: 'The man, the Mitch, the legend',
             slug: 'mitch'
           })
     })
+})
 })
 })
