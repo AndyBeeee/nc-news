@@ -63,3 +63,45 @@ describe('GET /api', () => {
     })
 })
 })
+describe('GET /api/articles/:article_id', () => {
+    test('Status code 200 returned', () => {
+        return request(app)
+        .get('/api/articles/2')
+        .expect(200)
+    })
+    test('Request responds with an article in the correct format', () => {
+        const articleFormat = {
+        author: expect.any(String),
+        title: expect.any(String),
+        article_id: expect.any(Number),
+        body: expect.any(String),
+        topic: expect.any(String),
+        created_at: expect.any(String),
+        votes: expect.any(Number),
+        article_img_url: expect.any(String)
+        }
+        const expected = expect.objectContaining(articleFormat)
+        return request(app)
+        .get('/api/articles/2')
+        .then(({ body }) => {
+            expect(body.article).toEqual(expected)
+        })
+    })
+    test('Request responds with a status code 404 when passed a non-existing article_id', () => {
+        return request(app)
+            .get('/api/articles/999') 
+            .expect(404)
+            .then(({ body }) => {
+            expect(body.msg).toEqual('Not Found')
+            })
+          })
+    test('Request responds with a 400 status for an invalid article_id', () => {
+    return request(app)
+        .get('/api/articles/notAnId')
+        .expect(400)
+        .then(({ body }) => {
+        expect(body.msg).toEqual('Bad request')
+        })
+    })
+    })
+
