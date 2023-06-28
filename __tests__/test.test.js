@@ -4,6 +4,7 @@ const seed = require('../db/seeds/seed')
 const data = require("../db/data/test-data/index")
 const db = require("../db/connection.js")
 const endpoints = require('../endpoints.json')
+require('jest-sorted')
 
 
 beforeEach(() => {
@@ -113,5 +114,44 @@ describe('GET /api/articles/:article_id', () => {
         expect(body.msg).toEqual('Bad request')
         })
     })
+ })
+
+describe('GET /api/articles', () => {
+    test('Status code 200 returned', () => {
+        return request(app)
+        .get('/api/articles')
+        .expect(200)
+        })
+
+    test('Request responds with articles that have the correct properties and a comment_count', () => {
+        return request(app)
+        .get('/api/articles')
+        .expect(200)
+        .then(({ body }) => {
+            expect(body.articles).toHaveLength(13)
+            body.articles.forEach(article => {
+            expect(article).toMatchObject({
+                author: expect.any(String),
+                title: expect.any(String),
+                article_id: expect.any(Number),
+                topic: expect.any(String),
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+                article_img_url: expect.any(String),
+                comment_count: expect.any(Number)
+              })
+            })
+        })
     })
 
+    test('Request responds with articles sorted by date in descending order', () => {
+        return request(app)
+        .get('/api/articles')
+        .expect(200)
+        .then(({ body: { articles } }) => {
+            expect(articles.length).toBe(13)
+            expect(articles.map(article => article.created_at)).toBeSorted({ descending: true })
+        })
+    })
+
+})    
