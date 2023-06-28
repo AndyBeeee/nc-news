@@ -4,6 +4,7 @@ const seed = require('../db/seeds/seed')
 const data = require("../db/data/test-data/index")
 const db = require("../db/connection.js")
 const endpoints = require('../endpoints.json')
+require('jest-sorted')
 
 
 beforeEach(() => {
@@ -122,39 +123,35 @@ describe('GET /api/articles', () => {
         .expect(200)
         })
 
-    test('Request responds with an article that has the correct properties and comment count', () => {
+    test('Request responds with articles that have the correct properties and a comment_count', () => {
         return request(app)
         .get('/api/articles')
+        .expect(200)
         .then(({ body }) => {
-            expect(body.articles[6]).toMatchObject({
-            author: 'butter_bridge',
-            title: 'Living in the shadow of a great man',
-            article_id: 1,
-            topic: 'mitch',
-            created_at: '2020-07-09T20:11:00.000Z',
-            votes: 100,
-            article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
-            comment_count: 11   
+            expect(body.articles).toHaveLength(13)
+            body.articles.forEach(article => {
+            expect(article).toMatchObject({
+                author: expect.any(String),
+                title: expect.any(String),
+                article_id: expect.any(Number),
+                topic: expect.any(String),
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+                article_img_url: expect.any(String),
+                comment_count: expect.any(Number)
+              })
             })
         })
     })
+
     test('Request responds with articles sorted by date in descending order', () => {
         return request(app)
         .get('/api/articles')
         .expect(200)
         .then(({ body: { articles } }) => {
             expect(articles.length).toBe(13)
-            let sorted = true
-            let date = articles[0].created_at
-            articles.forEach(article => {
-                const nextDate = article.created_at
-                if(nextDate > date) {
-                isSorted = false
-                }
-                date = nextDate
-                })
-            expect(sorted).toBe(true)
-            })
+            expect(articles.map(article => article.created_at)).toBeSorted({ descending: true })
         })
     })
-    
+
+})    
