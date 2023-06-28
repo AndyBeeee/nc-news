@@ -153,5 +153,57 @@ describe('GET /api/articles', () => {
             expect(articles.map(article => article.created_at)).toBeSorted({ descending: true })
         })
     })
-
 })    
+
+describe('GET /api/articles/:article_id/comments', () => {
+    test('Status code 200 returned', () => {
+        return request(app)
+        .get('/api/articles/1/comments')
+        .expect(200)
+        })
+
+    test('Request responds with comments in an array that have the correct properties', () => {
+        return request(app)
+        .get('/api/articles/1/comments')
+        .expect(200)
+        .then(({ body }) => {
+            expect(body.comments).toHaveLength(11)
+            expect(body.comments).toBeInstanceOf(Array)
+            body.comments.forEach(comment => {
+            expect(comment).toMatchObject({
+                comment_id: expect.any(Number),
+                votes: expect.any(Number),
+                created_at: expect.any(String),
+                author: expect.any(String),
+                body: expect.any(String),
+                article_id: expect.any(Number),
+                })
+            })
+        })
+    })
+    test('Request responds with comments sorted by date in descending order', () => {
+        return request(app)
+        .get('/api/articles/1/comments')
+        .expect(200)
+        .then(({ body: { comments } }) => {
+            expect(comments.length).toBe(11)
+            expect(comments.map(article => comments.created_at)).toBeSorted({ descending: true })
+        })
+    })
+    test('Request responds with a status code 404 when passed a non-existing article_id', () => {
+        return request(app)
+        .get('/api/articles/999/comments') 
+        .expect(404)
+        .then(({ body }) => {
+            expect(body.msg).toEqual('Not Found')
+        })
+    })
+    test('Request responds with a status code 400 when passed an invalid article_id', () => {
+    return request(app)
+        .get('/api/articles/notAnId/comments')
+        .expect(400)
+        .then(({ body }) => {
+            expect(body.msg).toEqual('Bad request')
+        })
+    })
+})
