@@ -324,7 +324,7 @@ describe('PATCH /api/articles/:article_id', () => {
         .then(({ body }) => {
         expect(body.article).toBeInstanceOf(Object)
         expect(body.article).toMatchObject({
-            article_id: expect.any(Number),
+            article_id: 1,
             title: expect.any(String),
             topic: expect.any(String),
             author: expect.any(String),
