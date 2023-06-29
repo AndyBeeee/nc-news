@@ -286,5 +286,25 @@ describe('POST /api/articles/:article_id/comments', () => {
             expect(body.msg).toEqual('Bad request')
         })
     })
-
+    test('POST responds with a status code 201 and the correct properties when passed unnecessary properties', () => {
+        return request(app)
+        .post('/api/articles/1/comments')
+        .send({
+            username: "butter_bridge",
+            body: "new comment!",
+            unnecessaryProperty: "This property is unnecessary",
+        })
+        .expect(201)
+        .then(({ body }) => {
+        expect(body.comment).toMatchObject({
+            comment_id: expect.any(Number),
+            author: "butter_bridge",
+            body: "new comment!",
+            article_id: 1,
+            votes: 0,
+            created_at: expect.any(String)
+        })
+        expect(body.comment).not.toHaveProperty('unnecessaryProperty')
+        })
+    })
 })
