@@ -308,3 +308,84 @@ describe('POST /api/articles/:article_id/comments', () => {
         })
     })
 })
+
+describe('PATCH /api/articles/:article_id', () => {
+    test('Status code 200 returned', () => {
+        return request(app)
+        .patch('/api/articles/1')
+        .send({ inc_votes: 1 })
+        .expect(200)
+        })
+
+    test('Patch responds with an object that has the correct properties', () => {
+        return request(app)
+        .patch('/api/articles/1')
+        .send({ inc_votes: 5 })
+        .then(({ body }) => {
+        expect(body.article).toBeInstanceOf(Object)
+        expect(body.article).toMatchObject({
+            article_id: expect.any(Number),
+            title: expect.any(String),
+            topic: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String)
+        })
+    })
+    })
+
+    test('Patch increases the votes of the article by the correct amount', () => {
+        return request(app)
+        .patch('/api/articles/1')
+        .send({ inc_votes: 5 })
+        .then(({ body }) => {
+            expect(body.article.votes).toBe(105)
+          })
+      })
+
+    test('Patch decreases the votes of the article by the correct amount', () => {
+        return request(app)
+        .patch('/api/articles/1')
+        .send({ inc_votes: -10 })
+        .then(({ body }) => {
+            expect(body.article.votes).toBe(90)
+          })
+      })
+
+    test('Patch responds with 400 error for invalid article_id', () => {
+        return request(app)
+        .patch('/api/articles/not-a-valid-id')
+        .send({ inc_votes: 1 })
+        .expect(400)
+    })
+
+    test('Patch responds with a 404 error for non-existent article_id', () => {
+    return request(app)
+        .patch('/api/articles/999')
+        .send({ inc_votes: 1 })
+        .expect(404)
+    })
+    
+    test('Patch responds with a 400 error for invalid vote change', () => {
+    return request(app)
+        .patch('/api/articles/1')
+        .send({ inc_votes: 'not-a-number' })
+        .expect(400)
+    })
+
+    test('Patch responds with a status code 200 and the correct properties when passed unnecessary properties', () => {
+        return request(app)
+        .patch('/api/articles/1')
+        .send({
+            inc_votes: 5,
+            unnecessaryProperty: "This property is unnecessary"
+        })
+        .expect(200)
+        .then(({ body }) => {
+        expect(body.article).not.toHaveProperty('unnecessaryProperty')
+        })
+    })
+})
+
