@@ -215,3 +215,76 @@ describe('GET /api/articles/:article_id/comments', () => {
         })
     })
 })
+
+describe('POST /api/articles/:article_id/comments', () => {
+    test('Status code 201 returned', () => {
+        return request(app)
+        .post('/api/articles/1/comments')
+        .send({
+            username: "butter_bridge",
+            body: "new comment!"
+        })
+        .expect(201)
+    })
+    test('Posts a new comment with the correct data and a comment_id', () => {
+        return request(app)
+        .post('/api/articles/1/comments')
+        .send({
+            username: "butter_bridge",
+            body: "new comment!"
+        })
+        .then(({ body }) => {
+            expect(body.comment).toHaveProperty('comment_id');
+            expect(body.comment.author).toBe('butter_bridge');
+            expect(body.comment.body).toBe('new comment!');
+        })       
+    })
+    test('Post responds with a status code 404 when passed a non-existing article_id', () => {
+        return request(app)
+        .post('/api/articles/999/comments') 
+        .send({
+            username: "butter_bridge",
+            body: "new comment!"
+        })
+        .expect(404)
+        .then(({ body }) => {
+            expect(body.msg).toEqual('Not Found')
+        })
+    })
+    test('Post responds with a status code 400 when passed an invalid article_id', () => {
+        return request(app)
+        .post('/api/articles/notAnId/comments')
+        .send({
+            username: "butter_bridge",
+            body: "new comment!"
+        })
+        .expect(400)
+        .then(({ body }) => {
+            expect(body.msg).toEqual('Bad request')
+        })
+    })
+    test('Post responds with a status code 400 when passed a post with missing fields', () => {
+        return request(app)
+        .post('/api/articles/notAnId/comments')
+        .send({
+            username: "butter_bridge"
+        })
+        .expect(400)
+        .then(({ body }) => {
+            expect(body.msg).toEqual('Bad request')
+        })
+    })
+    test('Post responds with a status code 400 when posted by a invalid username', () => {
+        return request(app)
+        .post('/api/articles/notAnId/comments')
+        .send({
+            username: "NotAUsername",
+            body: "new comment!"
+        })
+        .expect(400)
+        .then(({ body }) => {
+            expect(body.msg).toEqual('Bad request')
+        })
+    })
+
+})

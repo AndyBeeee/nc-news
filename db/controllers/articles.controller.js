@@ -1,4 +1,4 @@
-const { selectArticleById, selectAllComments, selectAllArticles, selectCommentsByArticleId } = require("../models/articles.model")
+const { selectArticleById, selectAllComments, selectAllArticles, selectCommentsByArticleId, postComment } = require("../models/articles.model")
 
 
 exports.getArticleById = (req, res, next) => {
@@ -33,4 +33,21 @@ exports.getCommentsByArticleId = (req, res, next) => {
         res.status(200).send({ comments })
         })
         .catch(next)
+}
+
+exports.postCommentByArticleId = (req, res, next) => {
+    const { article_id } = req.params
+    const { username, body } = req.body
+    selectArticleById(article_id)
+    .then(article => {
+        if (!article) {
+            throw { status: 404, msg: 'Not Found' }
+        } else {
+            return postComment(article_id, username, body)
+        }
+    })
+    .then((comment) => {
+        res.status(201).send({ comment })
+    })
+    .catch(next)
 }
