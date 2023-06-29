@@ -82,18 +82,15 @@ exports.changeVotes = (article_id, inc_votes) => {
       })
   }
 
-exports.removeComment = (comment_id) => {
+  exports.removeComment = (comment_id) => {
     return db.query(
-        `SELECT * FROM comments
-        WHERE comment_id = $1`, 
+        `DELETE FROM comments 
+        WHERE comment_id = $1 
+        RETURNING *;`, 
         [comment_id])
         .then(({ rows }) => {
             if (!rows.length) {
                 return Promise.reject({ status: 404, msg: "Not Found" })
-            } else 
-        return db.query (
-            `DELETE FROM comments 
-            WHERE comment_id = $1`, 
-            [comment_id])
+            } 
         })
 }
