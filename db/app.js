@@ -3,7 +3,7 @@ const app = express()
 
 const { getTopics } = require('./controllers/topics.controller')
 const endpoints = require('../endpoints.json')
-const { getArticleById, getAllArticles, getCommentsByArticleId, postCommentByArticleId} = require('./controllers/articles.controller')
+const { getArticleById, getAllArticles, getCommentsByArticleId, postCommentByArticleId, patchVotes} = require('./controllers/articles.controller')
 
 app.use(express.json())
 
@@ -20,6 +20,8 @@ app.get('/api/articles', getAllArticles)
 app.get('/api/articles/:article_id/comments', getCommentsByArticleId)
 
 app.post('/api/articles/:article_id/comments', postCommentByArticleId)
+
+app.patch('/api/articles/:article_id', patchVotes)
 
 app.all('*', (_,res) => {
     res.status(404).send({status: 404, msg: "Not Found"})
