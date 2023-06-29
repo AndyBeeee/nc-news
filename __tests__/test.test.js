@@ -389,3 +389,51 @@ describe('PATCH /api/articles/:article_id', () => {
     })
 })
 
+describe('Delete /api/comments/:comment_id', () => {
+    test('Delete returns status code 204', () => {
+        return request(app)
+        .delete('/api/comments/1')
+        .expect(204)
+    })
+
+    test('Delete return an empty object', () => {
+        return request(app)
+        .delete('/api/comments/1')
+        .then(({ body }) => {
+        expect(body).toEqual({})
+        })
+    })
+
+    test('Delete definitely deletes a comment', async () => {
+        const { body } = 
+        await request(app)
+        .post('/api/articles/1/comments')
+        .send({ username: 'butter_bridge', body: 'test comment' })
+    
+        await request(app)
+        .delete(`/api/comments/${body.comment.comment_id}`)
+        .expect(204)
+    
+        await request(app)
+        .get(`/api/comments/${body.comment.comment_id}`)
+        .expect(404)
+    })
+
+    test('Delete returns status 404 for non-existing comment_id', () => {
+        return request(app)
+        .delete('/api/comments/9999')
+        .expect(404)
+        .then(({ body }) => {
+            expect(body.msg).toBe('Not Found')
+        })
+    })
+
+    test('Delete returns status 400 for invalid comment_id', () => {
+        return request(app)
+        .delete('/api/comments/notAnId')
+        .expect(400)
+        .then(({ body }) => {
+            expect(body.msg).toBe('Bad request')
+        })
+    })
+})

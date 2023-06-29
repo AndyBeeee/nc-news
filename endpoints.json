@@ -102,7 +102,14 @@
           "article_img_url": "https://images.pexels.com/photos/158651"
         }
       }
-    }
+    },
+      "DELETE /api/comments/:comment_id": {
+          "description": "Deletes the requested comment by comment_id",
+          "queries": [],
+          "exampleResponse": {
+              "204": "No Content"
+          }
+      }
   }
   
 
