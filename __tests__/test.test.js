@@ -437,3 +437,26 @@ describe('Delete /api/comments/:comment_id', () => {
         })
     })
 })
+
+describe('GET /api/users', () => {
+    test('Status code 200 returned', () => {
+        return request(app)
+        .get('/api/users')
+        .expect(200)
+    })
+
+    test('Request responds with users that have the correct properties and length', () => {
+        return request(app)
+        .get('/api/users')
+        .then(({ body }) => {
+            expect(body.users).toHaveLength(4)
+            body.users.forEach(user => {
+            expect(user).toMatchObject({
+                username: expect.any(String),
+                name: expect.any(String),
+                avatar_url: expect.any(String)
+              })
+            })
+        })
+    })
+})
