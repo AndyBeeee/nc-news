@@ -448,7 +448,6 @@ describe('GET /api/users', () => {
         return request(app)
         .get("/api/users") 
         .then(({ body }) => {
-            console.log(body)
         expect(body.users).toBeInstanceOf(Array)
         })
     })
