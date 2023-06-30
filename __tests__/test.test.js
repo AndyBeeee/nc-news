@@ -460,3 +460,85 @@ describe('GET /api/users', () => {
         })
     })
 })
+
+describe('GET /api/articles(queries)', () => {
+    test('Status code 200 returned', () => {
+        return request(app)
+        .get('/api/articles?sort_by=votes')
+        .expect(200)
+        })
+
+    test('Request responds with articles that have the correct properties and a comment_count', () => {
+        return request(app)
+        .get('/api/articles?sort_by=votes')
+        .then(({ body }) => {
+            expect(body.articles).toHaveLength(13)
+            body.articles.forEach(article => {
+            expect(article).toMatchObject({
+                author: expect.any(String),
+                title: expect.any(String),
+                article_id: expect.any(Number),
+                topic: expect.any(String),
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+                article_img_url: expect.any(String),
+                comment_count: expect.any(Number)
+                })
+            })
+        })
+    })
+
+    test('Request responds with articles sorted by a valid column', () => {
+        return request(app)
+            .get('/api/articles?sort_by=votes')
+            .then(({ body }) => {
+            expect(body.articles).toBeSortedBy('votes', { descending: true })
+            })
+        })
+
+    test('Request responds with articles sorted in ascending order', () => {
+        return request(app)
+            .get('/api/articles?order=asc')
+            .then(({ body }) => {
+                expect(body.articles).toBeSortedBy('created_at')
+            })
+        })
+
+    test('Request responds with articles filtered by topic', () => {
+        return request(app)
+            .get('/api/articles?topic=mitch')
+            .then(({ body }) => {
+            expect(body.articles).toHaveLength(12)
+            body.articles.forEach(article => {
+                expect(article.topic).toBe("mitch")
+            })
+        })
+    })
+
+    test('Request responds with status 400 for an invalid sort request', () => {
+        return request(app)
+            .get('/api/articles?sort_by=notAColumn')
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Bad request')
+            })
+    })
+
+    test('Request responds with status 400 for an invalid order request', () => {
+        return request(app)
+            .get('/api/articles?order=notAnOrder')
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Bad request')
+            })
+    })
+
+    test('Request responds with status 404 for non-existent topic', () => {
+        return request(app)
+            .get('/api/articles?topic=notATopic')
+            .expect(404)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Not Found')
+             })
+    }) 
+})

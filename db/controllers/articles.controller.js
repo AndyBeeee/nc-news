@@ -11,16 +11,9 @@ exports.getArticleById = (req, res, next) => {
 }
 
 exports.getAllArticles = (req, res, next) => {
-    Promise.all([selectAllArticles(), selectAllComments()])
-        .then(([articles, comments]) => {
-        for (let i = 0; i < articles.length; i++) {
-            let comment_count = 0
-            for (let a = 0; a < comments.length; a++) {
-            if (comments[a].article_id === articles[i].article_id) {
-                comment_count++}
-            }
-            articles[i].comment_count = comment_count
-            }
+    const { topic, sort_by, order } = req.query
+    selectAllArticles(topic, sort_by, order)
+        .then((articles) => {
         res.status(200).send({ articles })
         })
         .catch(next)
