@@ -23,17 +23,31 @@ exports.selectAllComments = () => {
     })
 }
 
-exports.selectAllArticles = () => {
-    return db.query (
-        `SELECT author, title, article_id, topic, created_at, votes, article_img_url 
-        FROM articles
-        ORDER BY created_at DESC;`)
+exports.selectAllArticles = (topic, sort_by, order) => {
+    
+    if(!sort_by) {sort_by = 'created_at'}
+    if(!order) {order = 'desc'}
+    
+    let query = `
+        SELECT author, title, article_id, topic, created_at, votes, article_img_url,
+        CAST ((SELECT COUNT(*) FROM comments 
+        WHERE articles.article_id = comments.article_id) AS INTEGER)
+        AS comment_count
+        FROM articles`
+
+    if (topic) {
+        query += ` WHERE topic = '${topic}'`
+    }
+
+    query += ` ORDER BY ${sort_by} ${order}`
+
+    return db.query(query)
         .then(({ rows }) => {
             if(!rows.length) {
-            return Promise.reject({ status: 404, msg: "Not Found" })
+                return Promise.reject({ status: 404, msg: "Not Found" })
             } 
             return rows
-    })
+        })
 }
 
 exports.selectCommentsByArticleId = (article_id) => {
