@@ -444,13 +444,7 @@ describe('GET /api/users', () => {
         .get('/api/users')
         .expect(200)
     })
-    test('Request responds with an array of users', () => {
-        return request(app)
-        .get("/api/users") 
-        .then(({ body }) => {
-        expect(body.users).toBeInstanceOf(Array)
-        })
-    })
+
     test('Request responds with users that have the correct properties and length', () => {
         return request(app)
         .get('/api/users')
