@@ -480,7 +480,25 @@ test('Request responds with articles filtered by topic', () => {
       .expect(200)
       .then(({ body: { articles } }) => {
         expect(articles.length).toBeGreaterThan(0);
-        expect(articles.map(article => article.votes)).toBeSorted();
+        expect(articles.map(article => article.votes)).toBeSorted({ ascending: true });
       });
   });
+  test('Request responds with articles sorted by comment_count in descending order', () => {
+    return request(app)
+      .get('/api/articles?sort_by=comment_count&order=desc')
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles.length).toBeGreaterThan(0);
+        expect(articles.map(article => article.comment_count)).toBeSorted({ descending: true });
+      });
+});
+test('Request responds with articles sorted by comment_count in ascending order', () => {
+    return request(app)
+      .get('/api/articles?sort_by=comment_count&order=asc')
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles.length).toBeGreaterThan(0);
+        expect(articles.map(article => article.comment_count)).toBeSorted({ ascending: true });
+      });
+});
 });

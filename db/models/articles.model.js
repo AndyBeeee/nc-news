@@ -24,12 +24,17 @@ exports.selectAllComments = () => {
 }
 
 exports.selectAllArticles = (topic, sort_by = 'created_at', order = 'desc') => {
-    let query = `SELECT author, title, body, article_id, topic, created_at, votes, article_img_url 
-                 FROM articles ORDER BY ${sort_by} ${order}`
+    let query = `SELECT a.author, a.title, a.body, a.article_id, a.topic, a.created_at, a.votes, a.article_img_url, COUNT(c.comment_id) AS comment_count
+                 FROM articles a LEFT JOIN comments c ON a.article_id = c.article_id
+                 GROUP BY a.article_id
+                 ORDER BY ${sort_by === 'comment_count' ? 'COUNT(c.comment_id)' : 'a.' + sort_by} ${order}`;
   
     if (topic) {
-      query = `SELECT author, title, body, article_id, topic, created_at, votes, article_img_url 
-               FROM articles WHERE topic = $1 ORDER BY ${sort_by} ${order}`
+      query = `SELECT a.author, a.title, a.body, a.article_id, a.topic, a.created_at, a.votes, a.article_img_url, COUNT(c.comment_id) AS comment_count
+               FROM articles a LEFT JOIN comments c ON a.article_id = c.article_id
+               WHERE a.topic = $1
+               GROUP BY a.article_id
+               ORDER BY ${sort_by === 'comment_count' ? 'COUNT(c.comment_id)' : 'a.' + sort_by} ${order}`;
       return db.query(query, [topic])
         .then(({ rows }) => {
           if(!rows.length) {

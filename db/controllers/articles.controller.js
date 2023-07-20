@@ -24,6 +24,9 @@ exports.getAllArticles = (req, res, next) => {
           }
           articles[i].comment_count = comment_count;
         }
+        articles.forEach(article => {
+          article.comment_count = Number(article.comment_count);
+        });
         res.status(200).send({ articles })
       })
       .catch(next)
