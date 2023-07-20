@@ -460,3 +460,27 @@ describe('GET /api/users', () => {
         })
     })
 })
+
+describe('GET /api/articles', () => {
+test('Request responds with articles filtered by topic', () => {
+    return request(app)
+      .get('/api/articles?topic=mitch')
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles.length).toBeGreaterThan(0);
+        articles.forEach(article => {
+          expect(article.topic).toBe('mitch');
+        });
+      });
+  });
+
+  test('Request responds with articles sorted by votes in ascending order', () => {
+    return request(app)
+      .get('/api/articles?sort_by=votes&order=asc')
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles.length).toBeGreaterThan(0);
+        expect(articles.map(article => article.votes)).toBeSorted();
+      });
+  });
+});
